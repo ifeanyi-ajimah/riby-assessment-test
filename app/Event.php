@@ -19,11 +19,11 @@ class Event extends Model
     {
         return $this->belongsTo('App\Repo');
     }
-    
+
 
     public function getWhenCreatedAttribute()
     {
-        date_format($date,"Y-m-d H:i:s");
+        
         $dt = $this->created_at;
         $newDate = date_format($dt,"Y-m-d H:i:s");
         return $newDate;

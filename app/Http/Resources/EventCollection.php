@@ -3,8 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use App\Http\Resources\User;
-use App\Http\Resources\Repo;
+use App\Http\Resources\Event as Event;
 class EventCollection extends ResourceCollection
 {
     /**
@@ -17,11 +16,10 @@ class EventCollection extends ResourceCollection
     {
         // return parent::toArray($request);
         return [
-            'id' => $this->id,
-            'type' => $this->type,
-            'actor' =>  User::collection($this->user),
-            'repo' => Repo::collection($this->repo),
-            'created_at' => $this->whenCreated,
+            'data' => $this->collection,
+            'meta' => ['event_count' => $this->collection->count()],
         ];
     }
 }
+
+

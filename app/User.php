@@ -28,7 +28,7 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function event()
+    public function events()
     {
         return $this->hasMany('App\Event');
     }

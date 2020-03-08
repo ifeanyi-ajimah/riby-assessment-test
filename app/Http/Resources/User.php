@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use App\Http\Resources\Event as EventResource;
 class User extends JsonResource
 {
     /**
@@ -21,6 +21,7 @@ class User extends JsonResource
             'email' => $this->email,
             'password' => $this->password,
             'avatar_url' => $this->avatar_url,
+            'number_of_events' => $this->events->count(),
         ];
     }
 }

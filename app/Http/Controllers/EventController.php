@@ -12,30 +12,43 @@ class EventController extends Controller
 
     public function index()
     {
+
         $events = Event::orderBy('id', 'asc')->paginate(20);
-        return EventResource::collection($events);
+        // return EventResource1::collection($events);
+        return new  EventResource($events);
     }
 
 
    public function erase()
    {
-       $event = Event::all();
-       if( $event->each->delete())
-       {
-           return (new EventResource())
-           ->response()
-           ->setStatusCode(200);
-       }
+       $events = Event::all();
+        foreach( $events as $event)
+        {
+            $event->delete();
+        }
+        return response()->json(null, 200);
    }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
+        $this->validate($request,[
+            'type' =>'required|string',
+            'user_id' => 'required',
+            'repo_id' => 'required',
+        ]);
+
+        /** to check if request id already exist in db */
+        $eventsId = Event::all();
+        foreach( $eventsId as $eventid)
+        {
+            if( $eventid->id == $request->id)
+            {
+                return response()->json(['error' => 'This id aleady exist in database'], 400 );
+            }
+        }
+        /** end of check */
+
         $event = new Event;
         $event->type = $request->type;
         $event->user_id = $request->user_id;
@@ -52,57 +65,42 @@ class EventController extends Controller
 
     public function actor($actor_id)
     {
-        $events = Event::where('user_id',$actor_id)->orderBy('id', 'asc')->paginate(20);
-        if( !$event ){
-            return response()->json(['message' => 'Not found'], 404 );
-        }else{
+        $events = Event::where('user_id',$actor_id)->orderBy('id', 'asc')->get();//paginate(20);
 
-            return (EventResource::collection($events))
+        if ( isset($events) ){
+            return (EventResource1::collection($events))
                 ->response()
                 ->setStatusCode(201);
         }
+        else{
+            return response()->json(['message' => 'Not found'], 404 );
+            //  return response()->json(['error' => 'Not found'], 404);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Event  $event
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Event $event)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Event  $event
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Event $event)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Event  $event
-     * @return \Illuminate\Http\Response
-     */
+
+
+
     public function update(Request $request, Event $event)
     {
-        //
+        $this->validate($request,[
+            'type' =>'required|string',
+            'user_id' => 'required',
+            'repo_id' => 'required',
+        ]);
+
+        if( $request->user()->id !== $event->id)
+        {
+            return response()->json(['error' => 'You can only edit your own events'], 403);
+        }
+
+        $event->update( $request->only(['type', 'user_id', 'repo_id']));
+
+        return new EventResource1($event);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Event  $event
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Event $event)
     {
         //
@@ -114,6 +112,3 @@ class EventController extends Controller
 
 
 
-
-// $resource = new UserResource($user);
-// return $resource->response()->setStatusCode(200);

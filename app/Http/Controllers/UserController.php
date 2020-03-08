@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\User as UserResource;
 
 
@@ -12,16 +13,25 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->validate($request,[
+            'name' =>'string',
+            'email' => 'string|email',
+            'password' => 'string',
+            'avatar_url' => 'string',
+        ]);
+
+
         $user = User::find($id);
 
         if(!$user){
-            return response()->json(['message', 'user not found'], 404);
+            return response()->json(['error', 'user not found'], 404);
         }
 
-        if ( ($request->has('name')) || ($request->has('email')) || ($request->has('password')) ) {
+        if ( ($request->has('name')) || ($request->has('email')) || ($request->has('password'))  ) {
+            $user->name = $request->name;
             $user->avatar_url = $request->avatar_url;
             $user->email = $request->email;
-            $user->password = $request->password;
+            $user->password = Hash::make($request->password);
 
             if($user->save() ){
                 return (new UserResource($user))
@@ -41,7 +51,7 @@ class UserController extends Controller
 
     public function actors()
     {
-        $users = User::withCount('event')
+        $users = User::withCount('events')
         ->orderBy('events_count', 'desc')
         ->orderBy('created_at', 'desc')
         ->orderBy('name')
@@ -55,7 +65,7 @@ class UserController extends Controller
 
     public function  streak()
     {
-        $users = User::withCount('event')
+        $users = User::withCount('events')
         ->orderBy('events_count', 'desc')
         ->orderBy('created_at', 'desc')
         ->orderBy('name')
@@ -64,7 +74,7 @@ class UserController extends Controller
         return (UserResource::collection($users))
         ->response()
         ->setStatusCode(200);
-        
+
     }
 
 

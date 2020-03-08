@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::get('/erase', 'EventController@erase');
+Route::delete('/erase', 'EventController@erase');
 Route::post('/events', 'EventController@store');
 Route::get('/events','EventController@index');
 Route::get('/events/actors/{actor_id}', 'EventController@actor');
