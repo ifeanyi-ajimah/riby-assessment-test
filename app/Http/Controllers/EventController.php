@@ -14,7 +14,7 @@ class EventController extends Controller
     {
 
         $events = Event::orderBy('id', 'asc')->paginate(20);
-        // return EventResource1::collection($events);
+         //return EventResource1::collection($events);
         return new  EventResource($events);
     }
 
@@ -58,7 +58,7 @@ class EventController extends Controller
         {
             return (new EventResource1($event))
             ->response()
-           ->setStatusCode(201);
+           ->setStatusCode(201); //response 201 = created 
         }
 
     }

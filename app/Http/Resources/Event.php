@@ -18,11 +18,12 @@ class Event extends JsonResource
         // return parent::toArray($request);
         return [
             'id' => $this->id,
+            // 'test' => 'tester',
             'type' => $this->type,
             'user_id' =>  $this->user_id,
             'repo_id' => $this->repo_id,
-             'actor' =>  new UserResource ($this->user),
-            'repo' => new RepoResource($this->user),
+             'actor' =>  new UserResource ($this->user), //this is the event repo (based on eloquent relationship)
+            'repo' => new RepoResource($this->user),     //this is the event repo (based on eloquent relationship)
             'created_at' => $this->whenCreated,
         ];
     }

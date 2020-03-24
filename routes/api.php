@@ -26,5 +26,10 @@ Route::get('/actors', 'UserController@actors');
 Route::get('/actors/streak', 'UserController@streak');
 
 
+Route::get('file', 'FileController@downloadFile');
+Route::post('file', 'FileController@store');
+
+
+
 
 
